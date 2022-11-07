@@ -1,25 +1,31 @@
-import logo from './logo.svg';
-import './App.css';
+import {useContext} from "react";
+import {Router} from "./pages/Router";
+import {ThemeProvider, createTheme} from "@material-ui/core";
+import { GlobalContext } from "./global/GlobalContext";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+  const {darkMode} = useContext(GlobalContext)
+
+  const theme = createTheme({
+
+    palette:{
+      type:darkMode?'dark':'light',
+      secondary:{
+        light:'#2f6bd4',
+        main:'#2f6bd4'
+      },
+      background:{
+        paper: darkMode?'#333':'#fafafa'
+      }
+    }
+  });
+
+    return (
+        <ThemeProvider theme={theme}>
+          <Router />
+        </ThemeProvider>
+    );
 }
 
 export default App;
