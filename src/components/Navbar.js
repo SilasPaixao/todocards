@@ -1,4 +1,5 @@
 import React, {useState, useContext} from 'react';
+import {useNavigate} from 'react-router-dom';
 import { makeStyles } from '@material-ui/core/styles';
 import BottomNavigation from '@material-ui/core/BottomNavigation';
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction';
@@ -23,6 +24,11 @@ const useStyles = makeStyles({
 
     const {darkMode, setDarkMode} = useContext(GlobalContext);
 
+    const history = useNavigate();
+    const changePage = (page)=>{
+      history(page)
+    }
+
 
     const [value, setValue] = useState(0);
   
@@ -40,9 +46,9 @@ const useStyles = makeStyles({
         className={classes.root}
         edge="end"
       >
-        <BottomNavigationAction label="Add Tarefa" icon={<PlaylistAddSharpIcon />} />
+        <BottomNavigationAction onClick={()=>{changePage('/')}} label="Add Tarefa" icon={<PlaylistAddSharpIcon />} />
         <div className={classes.divider}></div>
-        <BottomNavigationAction label="Tarefas Cadastradas" icon={<AssignmentSharpIcon />} />
+        <BottomNavigationAction onClick={()=>{changePage('/tasks')}} label="Tarefas Cadastradas" icon={<AssignmentSharpIcon />} />
         <Divider orientation="vertical" flexItem/>
         <Switch inputProps={{ 'aria-label': 'primary checkbox' }} onClick={handleMode}/>
 

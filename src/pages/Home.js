@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import {Navbar} from "../components/Navbar"
-import {Grid, makeStyles, TextField, Typography, Snackbar, useTheme} from "@material-ui/core";
+import {Grid, makeStyles, TextField, Snackbar, useTheme, Typography} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { createGlobalStyle } from 'styled-components';
@@ -51,31 +51,61 @@ export const Home = ()=>{
     const theme = useTheme(); 
 
     const [task, setTask] = useState({});
-    const [cards, setCard] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    
+    //console.log(task)
     const [SuccessMsg, setSuccessMsg] = useState(false);
 
 
     const handleTxt = (e)=>{
         setTask({...task, [e.target.name]:e.target.value})
-        console.log(task)
-
     }
 
+    useEffect(()=>{
+        return(
+            tasksBackUp()
+        )
+    },[])
 
+    useEffect(()=>{
+        saveToLocalStorage()
+        
+    },[tasks])
+
+            
     const buildCard = (e) =>{
-        e && e.preventDefault();
-        e && setSuccessMsg(true); 
-        e && console.log("TAREFA REGISTRADA");
-        setCard([...cards, task])
-        localStorage.setItem("cards", JSON.stringify(cards))
+        e.preventDefault();
+        console.log("TAREFA REGISTRADA");
+        setTasks([...tasks, task])
+        setSuccessMsg(true);
     }
 
-        const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
-        }
     
-        setSuccessMsg(false);
+    // const successMsg = ()=>{
+    //     setSuccessMsg(true);
+    // }
+
+    const getStoragedTasks = ()=>{
+        const storagedTasks = localStorage.getItem("cards");
+        return storagedTasks
+    }
+
+    const saveToLocalStorage = ()=>{
+        localStorage.setItem("cards", JSON.stringify(tasks))
+    }
+
+    const tasksBackUp = ()=>{
+        const storagedTasks = getStoragedTasks();
+        localStorage.setItem("backup", JSON.stringify(storagedTasks))
+    }
+
+
+    const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+        return;
+    }
+
+    setSuccessMsg(false);
     }
 
     function Alert(props) {
