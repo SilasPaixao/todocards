@@ -1,5 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
 import {Navbar} from "../components/Navbar"
+import {CardTask} from "../components/CardTask"
 import {Grid, useTheme} from "@material-ui/core";
 import styled,{ createGlobalStyle } from 'styled-components';
 
@@ -9,61 +10,61 @@ const GlobalStyle = createGlobalStyle`
   }  
 `
 
-const MainStyle = styled.div`
-    display:flex;
-    align-items: flex-start; 
-    flex-wrap: wrap;
-    background-color: aliceblue;
-    div{
-      background-color:aquamarine;
-      min-width: 50px;
-      max-width: 190px;
-      min-height: 209px;
-      margin: 5px;
-      word-break: break-all;
-      flex-grow: 1;
-      flex-shrink: 0;
-      span{background-color:red; padding:4px; cursor:pointer}
-    }
-`
-
 export const Tasks = ()=>{
+
+    const componentDidMount = useRef(false)
     
-    // const tasks = [{title:"teste", task:"12abcssdasdads"},
-    //  {title:"teste1", task:"21abcssdasdads"},
-    //  {title:"teste2", task:"23abcssdasdads"},
-    //  {title:"teste3", task:"32abcssdasdads"}
-    // ]
+    const [tasks, setTasks] = useState([]);
+
     useEffect(()=>{
         getTasks()
     },[])
 
-        
-     const theme = useTheme(); 
+    useEffect(()=>{
+        componentDidMount.current ? saveToLocalStorage() : componentDidMount.current = true;
+    },[tasks])
 
-   const [tasks, setTasks] = useState({});
-   console.log("AAAAAAAAAAAAAAAAAAA", tasks)
+        
+    const theme = useTheme(); 
+
 
     const getTasks = ()=>{
         const storageTasks = JSON.parse(localStorage.getItem("cards"));
-        const newTasks = [...tasks, storageTasks]
-         setTasks(newTasks)
-        
+        storageTasks && setTasks(storageTasks)
     }
+//    console.log(tasks)
+
+    const deleteTasks = (indTaskToDel)=>{
+        if (tasks.length > 1){
+            setTasks(
+                tasks.filter((item, ind, obj)=>{
+                    return obj.splice(indTaskToDel, 1)
+                })
+            )
+        }else{
+            setTasks([])
+        }
+    }
+
+    const saveToLocalStorage = ()=>{
+        localStorage.setItem("cards", JSON.stringify(tasks))
+    }
+
+    const cardsToRender = tasks.map((item, ind)=>{
+        return(
+            <div render={ind} style={{marginTop:'30px', margin:'5px'}} >
+                <CardTask title={item.title} task={item.task} deleteTasks={()=>{deleteTasks(ind)}} />
+            </div>
+        )
+    })
 
    
     return(
         <div>
             <GlobalStyle theme={theme.palette.type} />
             <Navbar />
-            <Grid container justifyContent="center" alignItems="center">
-                {tasks.map((dado, i)=>{
-                    return (<MainStyle key={i}>
-                        <span >X</span>
-                        <h2>{dado.title}</h2>
-                        <p>{dado.task}</p>
-                    </MainStyle>)})
-                }
+            <Grid container justifyContent="center" alignItems="start">
+                {cardsToRender}
             </Grid>
         </div>
     )

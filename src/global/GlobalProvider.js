@@ -2,7 +2,8 @@ import React,{useState} from "react";
 import {GlobalContext} from "./GlobalContext";
 
 export const GlobalProvider = (props)=>{
-    const [darkMode, setDarkMode] = useState(false);
+    const initialThemeMode = localStorage.getItem("themeValue")==='dark';
+    const [darkMode, setDarkMode] = useState(initialThemeMode);
 
     
     

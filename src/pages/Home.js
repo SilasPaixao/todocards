@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {Navbar} from "../components/Navbar"
 import {Grid, makeStyles, TextField, Snackbar, useTheme, Typography} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
@@ -34,7 +34,9 @@ const useStyles = makeStyles((theme)=>({
         padding:'15px',
         resize:'none',
         borderColor:'#888',
-        backgroundColor:'inherit'
+        backgroundColor:'inherit',
+        color:theme.palette.type === 'dark'? '#ccc': '#000'
+
 
     },
     labelTarefa:{
@@ -56,21 +58,31 @@ export const Home = ()=>{
     //console.log(task)
     const [SuccessMsg, setSuccessMsg] = useState(false);
 
+    const componentDidMount = useRef(false);
 
     const handleTxt = (e)=>{
+        if(e.target.name === 'title' && e.target.value.length > 20){
+            alert("Ops! 20 letras ao máximo :/")
+        }
         setTask({...task, [e.target.name]:e.target.value})
     }
 
     useEffect(()=>{
-        return(
-            tasksBackUp()
-        )
+        getStoragedTasks()
     },[])
 
     useEffect(()=>{
-        saveToLocalStorage()
-        
+        if(componentDidMount.current){
+            saveToLocalStorage()
+        }else{
+            componentDidMount.current = true
+        }
     },[tasks])
+
+    const getStoragedTasks = ()=>{
+        const storagedTasks = JSON.parse(localStorage.getItem("cards"));
+        storagedTasks && setTasks([...storagedTasks])
+    }
 
             
     const buildCard = (e) =>{
@@ -80,25 +92,9 @@ export const Home = ()=>{
         setSuccessMsg(true);
     }
 
-    
-    // const successMsg = ()=>{
-    //     setSuccessMsg(true);
-    // }
-
-    const getStoragedTasks = ()=>{
-        const storagedTasks = localStorage.getItem("cards");
-        return storagedTasks
-    }
-
     const saveToLocalStorage = ()=>{
         localStorage.setItem("cards", JSON.stringify(tasks))
     }
-
-    const tasksBackUp = ()=>{
-        const storagedTasks = getStoragedTasks();
-        localStorage.setItem("backup", JSON.stringify(storagedTasks))
-    }
-
 
     const handleClose = (event, reason) => {
     if (reason === 'clickaway') {
@@ -149,6 +145,7 @@ export const Home = ()=>{
                           Tarefa Registrada!
                     </Alert>
                 </Snackbar>
+                
             </form>
         </div>
     )
