@@ -1,6 +1,6 @@
-import React, {useState} from "react";
+import React, {useState, useEffect, useRef} from "react";
 import {Navbar} from "../components/Navbar"
-import {Grid, makeStyles, TextField, Typography, Snackbar, useTheme} from "@material-ui/core";
+import {Grid, makeStyles, TextField, Snackbar, useTheme, Typography} from "@material-ui/core";
 import MuiAlert from "@material-ui/lab/Alert";
 import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 import { createGlobalStyle } from 'styled-components';
@@ -34,7 +34,9 @@ const useStyles = makeStyles((theme)=>({
         padding:'15px',
         resize:'none',
         borderColor:'#888',
-        backgroundColor:'inherit'
+        backgroundColor:'inherit',
+        color:theme.palette.type === 'dark'? '#ccc': '#000'
+
 
     },
     labelTarefa:{
@@ -51,31 +53,55 @@ export const Home = ()=>{
     const theme = useTheme(); 
 
     const [task, setTask] = useState({});
-    const [cards, setCard] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    
+    //console.log(task)
     const [SuccessMsg, setSuccessMsg] = useState(false);
 
+    const componentDidMount = useRef(false);
 
     const handleTxt = (e)=>{
-        setTask({...task, [e.target.name]:e.target.value})
-        console.log(task)
-
-    }
-
-
-    const buildCard = (e) =>{
-        e && e.preventDefault();
-        e && setSuccessMsg(true); 
-        e && console.log("TAREFA REGISTRADA");
-        setCard([...cards, task])
-        localStorage.setItem("cards", JSON.stringify(cards))
-    }
-
-        const handleClose = (event, reason) => {
-        if (reason === 'clickaway') {
-          return;
+        if(e.target.name === 'title' && e.target.value.length > 20){
+            alert("Ops! 20 letras ao máximo :/")
         }
-    
-        setSuccessMsg(false);
+        setTask({...task, [e.target.name]:e.target.value})
+    }
+
+    useEffect(()=>{
+        getStoragedTasks()
+    },[])
+
+    useEffect(()=>{
+        if(componentDidMount.current){
+            saveToLocalStorage()
+        }else{
+            componentDidMount.current = true
+        }
+    },[tasks])
+
+    const getStoragedTasks = ()=>{
+        const storagedTasks = JSON.parse(localStorage.getItem("cards"));
+        storagedTasks && setTasks([...storagedTasks])
+    }
+
+            
+    const buildCard = (e) =>{
+        e.preventDefault();
+        console.log("TAREFA REGISTRADA");
+        setTasks([...tasks, task])
+        setSuccessMsg(true);
+    }
+
+    const saveToLocalStorage = ()=>{
+        localStorage.setItem("cards", JSON.stringify(tasks))
+    }
+
+    const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+        return;
+    }
+
+    setSuccessMsg(false);
     }
 
     function Alert(props) {
@@ -119,6 +145,7 @@ export const Home = ()=>{
                           Tarefa Registrada!
                     </Alert>
                 </Snackbar>
+                
             </form>
         </div>
     )
