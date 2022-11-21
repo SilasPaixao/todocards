@@ -34,16 +34,14 @@ export const Tasks = ()=>{
     }
 //    console.log(tasks)
 
-    const deleteTasks = (indTaskToDel)=>{
-        if (tasks.length > 1){
-            setTasks(
-                tasks.filter((item, ind, obj)=>{
-                    return obj.splice(indTaskToDel, 1)
-                })
-            )
-        }else{
-            setTasks([])
-        }
+    const deleteTasks = (indTaskToDel)=>{ 
+            
+        setTasks(
+            tasks.filter((item, ind, obj)=>{
+                return ind !== indTaskToDel;
+            })
+        )        
+
     }
 
     const saveToLocalStorage = ()=>{
