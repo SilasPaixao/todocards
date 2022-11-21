@@ -19,7 +19,7 @@ Well as Material UI (https://mui.com/)
   
 
 ### Web App Link
-  mean-notebook.surge.sh
+  https://fanatical-chain.surge.sh/
 
 ### Creator Contacts
   Instagram: https://www.instagram.com/silas.paixa0/
